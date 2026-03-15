@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>os simulator guh</title>
+    <style>
+        .inputcommand {
+            width:95%;
+            position: absolute;
+            bottom: 0px;
+        }
+        #runcmd {
+            position: absolute;
+            right: 0px;
+            bottom: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div id="command">
+        <p id="commandline"></p>
+        <input type="text" class="inputcommand">
+        <button onclick="executeCommand()" id="runcmd">run command</button>
+    </div>
+    <script>
+        var files = [];
+        var pipe = null; //will be set later for app communication NOT NEEDED
+
+        class file {
+            constructor(name, content, type) {
+                this.name = name;
+                this.content = content || ""; // Fix: default to empty string
+            }
+        }
+
+        function createfile (f) {
+            files.push(new file(f[0]));
+        }
+
+        function findfile (f) {
+            for (var i = 0; i < files.length; i++) {
+                if (files[i].name == f) {
+                    return i;
+                }
+            }
+            return -1; // Added: return -1 if not found
+        }
+
+        function replacefilecontent(f) {
+            var index = findfile(f[0]);
+            if (index !== -1) files[index].content = f[1];
+        }
+
+        function deleteFile(f) {
+            var index = findfile(f[0]);
+            if (index !== -1) {
+                files.splice(index, 1); // Fix: pop() doesn't take index, use splice
+            }
+        }
+
+        function writetocmd (w) {
+            document.getElementById("commandline").innerText += w + "\n";
+        }
+
+        function executeCommand() {
+            var command = document.getElementsByClassName("inputcommand")[0].value;
+            var args = command.split(" ");
+            
+            if (args[0] == "crf") {
+                createfile([args[1]]);
+                writetocmd("file with name " + args[1] + " successfully created.");
+            }
+            if (args[0] == "dlf") {
+                deleteFile([args[1]]);
+                writetocmd("file with name " + args[1] + " successfully removed.");
+            }
+            if (args[0] == "out") {
+                writetocmd(args[1]); // Fix: passed string directly instead of array
+            }
+            if (args[0] == "wrf") {
+                replacefilecontent([args[1], args[2]]);
+                writetocmd("file" + args[1] + "changed to" + args[2] + ".");
+            }
+            if (args[0] == "outf") {
+                var index = findfile(args[1]);
+                if (index !== -1) writetocmd(files[index].content);
+            }
+            if (args[0] == "runf") {
+                var index = findfile(args[1]);
+                writetocmd("file " + args[1] + " has been started.");
+                if (index !== -1) eval(files[index].content);
+                writetocmd("file " + args[1] + " has stopped.");
+            }
+            
+            // Optional: clear input after clicking run
+            document.getElementsByClassName("inputcommand")[0].value = "";
+        }
+    </script>
+</body>
+</html>
