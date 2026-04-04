@@ -20,12 +20,11 @@
     <div id="command">
         <p id="commandline"></p>
         <input type="text" class="inputcommand">
-        <button onclick="executeCommand()" id="runcmd">run command</button>
+        <button onclick="executecommand()" id="runcmd">run command</button>
     </div>
     <script>
         var files = [];
         var pipe = null; //will be set later for app communication NOT NEEDED
-
         class file {
             constructor(name, content, type) {
                 this.name = name;
@@ -62,7 +61,18 @@
             document.getElementById("commandline").innerText += w + "\n";
         }
 
-        function executeCommand() {
+        function boottext() {
+            writetocmd("OS version 1.0.2");
+            writetocmd("Run command help for help.");
+        }
+
+        function runfile(file, logless) {
+            var index = findfile(file);
+            if (logless === false) {writetocmd("file " + args[1] + " has been started.");}
+            if (index !== -1) eval(files[index].content);
+        }
+
+        function executecommand() {
             var command = document.getElementsByClassName("inputcommand")[0].value;
             var args = command.split(" ");
             
@@ -85,14 +95,33 @@
                 var index = findfile(args[1]);
                 if (index !== -1) writetocmd(files[index].content);
             }
+            // this place can only be edited by mrtli08 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓
             if (args[0] == "runf") {
                 var index = findfile(args[1]);
-                writetocmd("file " + args[1] + " has been started.");
+                writetocmd("file " + args[1] + " has been started."); 
                 if (index !== -1) eval(files[index].content);
-                writetocmd("file " + args[1] + " has stopped.");
             }
-            
-            // Optional: clear input after clicking run
+            // this place can only be edited by mrtli08 ↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+            if (args[0] == "listf") {
+                writetocmd("found files:");
+                for (var i = 0; i < files.length; i++) {
+                    writetocmd(files[i].name);
+                }
+            }
+            if (args[0] == "ver") {
+                writetocmd("OS version 1.0.2");
+            }
+            if (args[0] == "help") {
+                writetocmd("crf name - creates a file [1.0]");
+                writetocmd("dlf name - deletes a file [1.0]");
+                writetocmd("out text - basically echo [1.0]");
+                writetocmd("wrf name, text - overwrites file content [1.0]");
+                writetocmd("outf - outputs file contents [1.0]");
+                writetocmd("runf - run file with eval() [1.0]");
+                writetocmd("listf [1.0.1]");
+                writetocmd("ver [1.0.2]");
+                writetocmd("help [1.0.2]");
+            }
             document.getElementsByClassName("inputcommand")[0].value = "";
         }
     </script>
