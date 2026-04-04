@@ -1,2 +1,2 @@
 # microwaveOS
-literally, a OS.
+literally, a OS- MADE IN JS!!!!!!!
